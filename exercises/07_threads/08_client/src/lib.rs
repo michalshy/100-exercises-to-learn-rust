@@ -14,11 +14,19 @@ pub struct TicketStoreClient {
 impl TicketStoreClient {
     // Feel free to panic on all errors, for simplicity.
     pub fn insert(&self, draft: TicketDraft) -> TicketId {
-        todo!()
+        let (response_sender, response_receiver) = std::sync::mpsc::channel();
+        self.sender.send(
+            Command::Insert { draft: draft, response_channel: response_sender }
+        ).unwrap();
+        response_receiver.recv().unwrap()
     }
 
     pub fn get(&self, id: TicketId) -> Option<Ticket> {
-        todo!()
+        let (response_sender, response_receiver) = std::sync::mpsc::channel();
+        self.sender.send(
+            Command::Get { id: id, response_channel: response_sender } 
+        ).unwrap();
+        response_receiver.recv().unwrap()
     }
 }
 
